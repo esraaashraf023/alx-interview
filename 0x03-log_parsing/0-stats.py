@@ -1,62 +1,39 @@
 #!/usr/bin/python3
-"""Implement Log parsing Algorithm"""
+"""
+Log parsing
+"""
 
-import re
 import sys
 
+if __name__ == '__main__':
 
-def print_stats(status_codes, total_size):
-    """Print All statistics"""
-    print(f'File size: {total_size}')
-    for key in sorted(status_codes.keys()):
-        if status_codes[key] == 0:
-            continue
-        print(f'{key}: {status_codes[key]}')
+    filesize, count = 0, 0
+    codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
+    stats = {k: 0 for k in codes}
 
-
-def main():
-    """Entry point of implementation"""
-    pattern = (r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) - '
-               r'\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6})\] "GET '
-               r'\/projects\/260 HTTP\/1.1" (\d{3}) (\d+)$')
-    line_count = 0
-
-    status_codes = {
-        200: 0,
-        301: 0,
-        400: 0,
-        401: 0,
-        403: 0,
-        404: 0,
-        405: 0,
-        500: 0
-    }
-    total_size = 0
+    def print_stats(stats: dict, file_size: int) -> None:
+        print("File size: {:d}".format(filesize))
+        for k, v in sorted(stats.items()):
+            if v:
+                print("{}: {}".format(k, v))
 
     try:
         for line in sys.stdin:
-            line_count += 1
-            line_match = re.match(pattern, line)
-            if not line_match:
-                continue
-
-            status_code = int(line_match.group(3))
-            file_size = int(line_match.group(4))
-
-            if status_code in status_codes.keys():
-                status_codes[status_code] += 1
-
-            total_size += file_size
-
-            if line_count % 10 == 0:
-                print_stats(status_codes, total_size)
-
-        print_stats(status_codes, total_size)
-
+            count += 1
+            data = line.split()
+            try:
+                status_code = data[-2]
+                if status_code in stats:
+                    stats[status_code] += 1
+            except BaseException:
+                pass
+            try:
+                filesize += int(data[-1])
+            except BaseException:
+                pass
+            if count % 10 == 0:
+                print_stats(stats, filesize)
+        print_stats(stats, filesize)
     except KeyboardInterrupt:
-        print_stats(status_codes, total_size)
+        print_stats(stats, filesize)
         raise
-
-
-if __name__ == '__main__':
-    main()
