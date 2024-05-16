@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" N queens """
+""" N queensss """
 import sys
 
 
