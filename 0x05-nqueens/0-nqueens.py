@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" N queensss """
+""" N queens puzzle is the challenge of placing. """
 import sys
 
 
